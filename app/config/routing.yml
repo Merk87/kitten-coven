@@ -1,0 +1,6 @@
+kitten_coven:
+    resource: "@KittenCovenBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+

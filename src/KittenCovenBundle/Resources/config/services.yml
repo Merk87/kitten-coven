@@ -1,0 +1,4 @@
+services:
+    kitten_coven.black_grimoire:
+        class: KittenCovenBundle\Services\ApiConsumer
+        arguments: ["@doctrine.orm.entity_manager", "%kernel.root_dir%"]
