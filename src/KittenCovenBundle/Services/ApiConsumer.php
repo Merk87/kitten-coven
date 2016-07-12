@@ -38,8 +38,17 @@ class ApiConsumer
 
         $gameFilesLocation = $this->rootDir.'/../web/secret_basement';
 
+        if(!is_dir($gameFilesLocation)){
+            mkdir($gameFilesLocation, 0755);
+        }
+
         foreach ($this->files as $key => $file) {
             $thisPlatformFolder = $gameFilesLocation.'/'.$key;
+
+            if(!is_dir($thisPlatformFolder)){
+                mkdir($thisPlatformFolder , 0755);
+            }
+
             $gameFile = $this->getSourceData($file);
 
             foreach($gameFile as $game){
