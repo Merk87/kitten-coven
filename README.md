@@ -6,4 +6,4 @@ We are a bunch of warlock Kittens, so beware our power!
 List of Great Maesters:
 
 * Merkury
-* The Unnamed R
+* Rhysbeingsocial
