@@ -54,9 +54,9 @@ class ApiConsumer
             foreach ($gameFile as $game) {
                 $client = new Client();
                 $res = $client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($game['game_name']) . '&rvsection=0');
-                $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
                 $arrResult = json_decode($res->getBody()->getContents(), true);
                 if (!array_key_exists(-1, $arrResult['query']['pages'])) {
+                    $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
                     fwrite($fp, json_encode($arrResult, JSON_PRETTY_PRINT));
                     fclose($fp);
                     print_r('Saved: ' . $game['game_name'] . "\n");
