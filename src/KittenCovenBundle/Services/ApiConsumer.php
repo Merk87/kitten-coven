@@ -54,10 +54,32 @@ class ApiConsumer
             foreach ($gameFile as $game) {
                 $client = new Client();
                 $res = $client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($game['game_name']) . '&rvsection=0');
+
                 $arrResult = json_decode($res->getBody()->getContents(), true);
+
+                $extractRes = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&titles=' . urlencode($game['game_name']))->getBody()->getContents(), true);
+                $results = [];
+
+
+                if (!array_key_exists(-1, $extractRes['query']['pages'])) {
+                    $results['extract'] = strip_tags($this->getRelevantInformation($extractRes, "extract"));
+                }
+
+
                 if (!array_key_exists(-1, $arrResult['query']['pages'])) {
+                    $preParsedResult = trim(preg_replace('/\s+/', ' ', $this->getRelevantInformation($arrResult, "*")));
+
+                    preg_match("/{{Infobox.+ }}/", $preParsedResult, $infoBoxWikiFormat);
+
+                    if(count($infoBoxWikiFormat) > 0){
+                        preg_match_all('/(?<=\|\s)(.*?)(?=\|\s)|(?<=\|\s)(.*?)(?=\}})/', strip_tags($infoBoxWikiFormat[0]), $individualValues);
+                        $results['infoBox'] = $individualValues[0];
+
+                    }
+                }
+                if(!empty($results) && isset($results['infoBox'])){
                     $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
-                    fwrite($fp, json_encode($arrResult, JSON_PRETTY_PRINT));
+                    fwrite($fp, json_encode($results, JSON_PRETTY_PRINT));
                     fclose($fp);
                     print_r('Saved: ' . $game['game_name'] . "\n");
                 }
@@ -96,6 +118,19 @@ class ApiConsumer
         array_shift($data_array);
 
         return $data_array;
+    }
+
+    private function getRelevantInformation($array, $indexToSearch)
+    {
+        $res = false;
+
+        array_walk_recursive($array, function ($value, $key) use (&$res, $indexToSearch) {
+            if ($key == $indexToSearch) {
+                $res = $value;
+            }
+        });
+
+        return $res;
     }
 
 
