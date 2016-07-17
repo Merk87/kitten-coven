@@ -53,13 +53,11 @@ class ApiConsumer
 
             foreach ($gameFile as $game) {
                 $client = new Client();
-                $res = $client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($game['game_name']) . '&rvsection=0');
 
-                $arrResult = json_decode($res->getBody()->getContents(), true);
-
+                $arrResult = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($game['game_name']) . '&rvsection=0')->getBody()->getContents(), true);
                 $extractRes = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&titles=' . urlencode($game['game_name']))->getBody()->getContents(), true);
-                $results = [];
 
+                $results = [];
 
                 if (!array_key_exists(-1, $extractRes['query']['pages'])) {
                     $results['extract'] = strip_tags($this->getRelevantInformation($extractRes, "extract"));
@@ -68,7 +66,6 @@ class ApiConsumer
 
                 if (!array_key_exists(-1, $arrResult['query']['pages'])) {
                     $preParsedResult = trim(preg_replace('/\s+/', ' ', $this->getRelevantInformation($arrResult, "*")));
-
                     preg_match("/{{Infobox.+ }}/", $preParsedResult, $infoBoxWikiFormat);
 
                     if (count($infoBoxWikiFormat) > 0) {
@@ -119,6 +116,11 @@ class ApiConsumer
         return $data_array;
     }
 
+    /**
+     * @param $array
+     * @param $indexToSearch
+     * @return bool
+     */
     private function getRelevantInformation($array, $indexToSearch)
     {
         $res = false;
@@ -132,8 +134,13 @@ class ApiConsumer
         return $res;
     }
 
+    /**
+     * @param $array
+     * @return array
+     */
     private function makeANiceArray($array)
     {
+
         $result = [];
 
         array_walk($array, function ($value) use (&$result, $array) {
@@ -148,7 +155,6 @@ class ApiConsumer
                 $result[str_replace(' ', '', $explodedString[0])] = isset($explodedString[1]) ? str_replace(' ', '', $explodedString[1]) : '';
             }
         });
-
         return $result;
 
     }
