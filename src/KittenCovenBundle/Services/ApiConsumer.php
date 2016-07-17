@@ -71,13 +71,12 @@ class ApiConsumer
 
                     preg_match("/{{Infobox.+ }}/", $preParsedResult, $infoBoxWikiFormat);
 
-                    if(count($infoBoxWikiFormat) > 0){
+                    if (count($infoBoxWikiFormat) > 0) {
                         preg_match_all('/(?<=\|\s)(.*?)(?=\|\s)|(?<=\|\s)(.*?)(?=\}})/', strip_tags($infoBoxWikiFormat[0]), $individualValues);
-                        $results['infoBox'] = $individualValues[0];
-
+                        $results['infoBox'] = $this->makeANiceArray($individualValues[0]);
                     }
                 }
-                if(!empty($results) && isset($results['infoBox'])){
+                if (!empty($results) && isset($results['infoBox'])) {
                     $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
                     fwrite($fp, json_encode($results, JSON_PRETTY_PRINT));
                     fclose($fp);
@@ -131,6 +130,27 @@ class ApiConsumer
         });
 
         return $res;
+    }
+
+    private function makeANiceArray($array)
+    {
+        $result = [];
+
+        array_walk($array, function ($value) use (&$result, $array) {
+            $explodedString = explode('=', $value);
+            if (str_replace(' ', '', $explodedString[0]) == 'released') {
+                unset($explodedString[0]);
+                $result['released'] = '';
+                foreach ($explodedString as $value) {
+                    $result['released'] .= $value;
+                }
+            } else {
+                $result[str_replace(' ', '', $explodedString[0])] = isset($explodedString[1]) ? str_replace(' ', '', $explodedString[1]) : '';
+            }
+        });
+
+        return $result;
+
     }
 
 
