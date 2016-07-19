@@ -49,14 +49,14 @@ class ApiConsumer
                 mkdir($thisPlatformFolder, 0755);
             }
 
-            $gameFile = $this->getSourceData($file);
+            $dataFile = $this->getSourceData($file);
 
             $infoBoxArrayKeys = [];
-            foreach ($gameFile as $game) {
+            foreach ($dataFile['data'] as $entry) {
                 $client = new Client();
 
-                $arrResult = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($game['game_name']) . '&rvsection=0')->getBody()->getContents(), true);
-                $extractRes = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&titles=' . urlencode($game['game_name']))->getBody()->getContents(), true);
+                $arrResult = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=' . urlencode($entry[$dataFile['header']]) . '&rvsection=0')->getBody()->getContents(), true);
+                $extractRes = json_decode($client->request('GET', 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&titles=' . urlencode($entry[$dataFile['header']]))->getBody()->getContents(), true);
 
                 $results = [];
 
@@ -80,10 +80,6 @@ class ApiConsumer
                         //(\w+\s=\s)({{.*?list\|\s)(.*?)(\s}}|}})
                         preg_match_all('/(\w+\s=\s)({{.*?list(\s|)\|(\s|))(.*?)(\s}}|}})/', $infoBox, $lists);
 
-//                        dump($infoBox);
-//                        dump($lists[0]);
-//                        die();
-
                         foreach($lists[0] as $m){
                             $infoBox = str_replace('| '.$m.' ','',$infoBox);
                         }
@@ -99,13 +95,12 @@ class ApiConsumer
                 }
 
                 if (!empty($results) && (isset($results['infoBox']) && !empty($results['infoBox']))) {
-                    $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
+                    $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $entry[$dataFile['header']]) . '.json', 'w');
                     fwrite($fp, json_encode($results, JSON_PRETTY_PRINT));
                     fclose($fp);
-                    print_r('Saved: ' . $game['game_name'] . "\n");
+                    print_r('Saved: ' . $entry[$dataFile['header']] . "\n");
 
                     $infoBoxArrayKeys = array_merge(array_unique($infoBoxArrayKeys), array_keys($results['infoBox']));
-//                    dump($infoBoxArrayKeys);
                 }
 
                 $fp2 = fopen($gameFilesLocation.'/indexes.json', 'w');
@@ -139,13 +134,15 @@ class ApiConsumer
 
         $data_array = array_map('str_getcsv', file($files->current()->getRealPath()));
 
+        $header = $data_array[0][0];
+
         array_walk($data_array, function (&$a) use ($data_array) {
             $a = array_combine($data_array[0], $a);
         });
 
         array_shift($data_array);
 
-        return $data_array;
+        return ['data' => $data_array, 'header' => $header];
     }
 
     /**
@@ -185,7 +182,7 @@ class ApiConsumer
                     $result['released'] .= $value;
                 }
             } else {
-                if(str_word_count(trim($explodedString[0])) == 1 && (isset($explodedString[1]) && !empty($explodedString[1]))){
+                if(str_word_count(trim($explodedString[0])) == 1 && isset($explodedString[1])){
                     $result[trim($explodedString[0])] = trim($explodedString[1]);
                 }else{
                     if(!array_key_exists('extra', $result)){
