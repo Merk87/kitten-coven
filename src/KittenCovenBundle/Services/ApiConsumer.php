@@ -51,6 +51,7 @@ class ApiConsumer
 
             $gameFile = $this->getSourceData($file);
 
+            $infoBoxArrayKeys = [];
             foreach ($gameFile as $game) {
                 $client = new Client();
 
@@ -69,16 +70,47 @@ class ApiConsumer
                     preg_match("/{{Infobox.+ }}/", $preParsedResult, $infoBoxWikiFormat);
 
                     if (count($infoBoxWikiFormat) > 0) {
-                        preg_match_all('/(?<=\|\s)(.*?)(?=\|\s)|(?<=\|\s)(.*?)(?=\}})/', strip_tags($infoBoxWikiFormat[0]), $individualValues);
-                        $results['infoBox'] = $this->makeANiceArray($individualValues[0]);
+                        $infoBox = preg_replace('/(<!---)(.*?)(--->)/', '', strip_tags($infoBoxWikiFormat[0]));
+
+                        $infoBox = preg_replace('/(\s|)\|(\s|)(titlestyle.*?=.*?)(?=(\s|)\|(\s|))/', '', $infoBox);
+                        $infoBox = str_replace('{{{{', '{{ {{', $infoBox);
+                        $infoBox = str_replace('}}}}', '}} }}', $infoBox);
+
+                        //ORIGINAL ONE (\w+\s=\s)({{Plain list\s\|\s)(.*?)(\s}}|}})
+                        //(\w+\s=\s)({{.*?list\|\s)(.*?)(\s}}|}})
+                        preg_match_all('/(\w+\s=\s)({{.*?list(\s|)\|(\s|))(.*?)(\s}}|}})/', $infoBox, $lists);
+
+//                        dump($infoBox);
+//                        dump($lists[0]);
+//                        die();
+
+                        foreach($lists[0] as $m){
+                            $infoBox = str_replace('| '.$m.' ','',$infoBox);
+                        }
+
+                        preg_match_all('/(?<=\|\s)(.*?)(?=\|\s)|(?<=\|\s)(.*?)(?=\}})/', strip_tags($infoBox), $individualValues);
+
+                        $results['infoBox'] = array_merge(
+                            $this->makeANiceArray($individualValues[0]),
+                            $this->makeANiceArray($lists[0])
+                        );
+
                     }
                 }
-                if (!empty($results) && isset($results['infoBox'])) {
+
+                if (!empty($results) && (isset($results['infoBox']) && !empty($results['infoBox']))) {
                     $fp = fopen($thisPlatformFolder . '/' . str_replace(' ', '-', $game['game_name']) . '.json', 'w');
                     fwrite($fp, json_encode($results, JSON_PRETTY_PRINT));
                     fclose($fp);
                     print_r('Saved: ' . $game['game_name'] . "\n");
+
+                    $infoBoxArrayKeys = array_merge(array_unique($infoBoxArrayKeys), array_keys($results['infoBox']));
+//                    dump($infoBoxArrayKeys);
                 }
+
+                $fp2 = fopen($gameFilesLocation.'/indexes.json', 'w');
+                fwrite($fp2, json_encode($infoBoxArrayKeys, JSON_PRETTY_PRINT));
+                fclose($fp2);
             }
         }
     }
@@ -145,6 +177,7 @@ class ApiConsumer
 
         array_walk($array, function ($value) use (&$result, $array) {
             $explodedString = explode('=', $value);
+
             if (str_replace(' ', '', $explodedString[0]) == 'released') {
                 unset($explodedString[0]);
                 $result['released'] = '';
@@ -152,9 +185,17 @@ class ApiConsumer
                     $result['released'] .= $value;
                 }
             } else {
-                $result[str_replace(' ', '', $explodedString[0])] = isset($explodedString[1]) ? str_replace(' ', '', $explodedString[1]) : '';
+                if(str_word_count(trim($explodedString[0])) == 1 && (isset($explodedString[1]) && !empty($explodedString[1]))){
+                    $result[trim($explodedString[0])] = trim($explodedString[1]);
+                }else{
+                    if(!array_key_exists('extra', $result)){
+                        $result['extra'] = $explodedString[0];
+                    }
+                    $result['extra'] .= $explodedString[0];
+                }
             }
         });
+
         return $result;
 
     }
