@@ -7,11 +7,4 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class DefaultController extends Controller
 {
-    /**
-     * @Route("/")
-     */
-    public function indexAction()
-    {
-        return $this->render('KittenCovenBundle:Default:index.html.twig');
-    }
 }

@@ -1,0 +1,55 @@
+{
+  "title": "No Man's Sky",
+  "developers": "Hello Games",
+  "publisher(s)": "Hello Games",
+  "distributor(s)": [
+    "Sony Interactive Entertainment",
+    "iam8bit"
+  ],
+  "director(s)": [
+    "Sean Murray",
+    "David Ream"
+  ],
+  "producer(s)": [
+    "Suzy Wallace"
+  ],
+  "designer(s)": [
+    "Gareth Bourn"
+  ],
+  "programmer(s)": [
+    "Harry Denholm",
+    "Ryan Doyle",
+    "Innes McKendrick",
+    "Sean Murray",
+    "David Ream"
+  ],
+  "artist(s)": [
+    "Grant Duncan",
+    "Jacob Golding"
+  ],
+  "composer(s)": [
+    "65daysofstatic",
+    "Paul Weir",
+    ""
+  ],
+  "platform(s)": [
+    "PlayStation 4",
+    "Microsoft Windows"
+  ],
+  "releaseDate(s)": [
+    {
+      "NA": "9 August 2016",
+      "EU": "10 August 2016",
+      "UK": "10 August 2016"
+    }
+  ],
+  "genre(s)": [
+    "Action-Adventure",
+    "survival"
+  ],
+  "mode(s)": [
+    "Single-player",
+    "multiplayer"
+  ],
+  "intro": "No Man's Sky's gameplay is built on four pillars—exploration, survival, combat and trading—in which players are free to perform within the entirety of a procedurally generated deterministic open universe, which includes over 18 quintillion (1.8×1019) planets,[a] many with their own set of flora and fauna. By exploring, players gain information about the planets that they can submit to The Atlas, a universal database that can be shared with other players of the game. Players get compensated in currency every time new information is uploaded to The Atlas. Players also gain materials and blueprints to upgrade their character's equipment and purchase a variety of starships, allowing them to travel deeper into the center of the galaxy, survive on planets with hostile environments, interact in friendly or hostile manners to computer-controlled space-faring factions, or trade with other ships. Some activities, such as killing too many lifeforms or draining too many resources from planets, will draw the attention of Sentinels that will attempt to kill the player-character. Players participate in a shared universe, with the ability to exchange planet coordinates with friends, though the game will also be fully playable offline; this is enabled by the procedural generation system that assures players will find the same planet with the same features, lifeforms, and other aspects once given the planet coordinates, requiring no further data to be stored or retrieved from game servers.  Nearly all elements of the game are procedurally generated, including star systems, planets and their ecosystems, flora, fauna and their behavioral patterns, artificial structures, and alien factions and their spacecraft. The game's engine employs several deterministic algorithms such as parameterised mathematical equations that can mimic a wide range of geometry and structure found in nature. Art elements created by human artists are used and altered as well within these generation systems. The game's audio, including ambient sounds and its underlying soundtrack, also use procedural generation methods from base samples developed by Paul Weir and the musical group 65daysofstatic.\\n No Man's Sky represents a vision of a broad, attention-getting game that Hello Games has had in place since the formation of the company, set aside while they secured their financial wellbeing through other, less risky titles such as the Joe Danger games. The game's original prototype was worked on by Hello Games' Sean Murray, and then expanded into a small 4-person team prior to its first teaser in December 2013. Since then, more of Hello Games' staff have worked on the game, with about a dozen developers leading up to its release. Sony provided promotional and marketing support, but Hello Games refused any additional development support. Sony formally announced the title during their press conference at the Electronic Entertainment Expo 2014, the first independently-developed game to be presented at the Expo's centrepiece events."
+}
